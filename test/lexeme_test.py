@@ -49,6 +49,28 @@ class LexemeTest(unittest.TestCase):
             with self.subTest(msg='test_%d: %r' % (k, sys_input)):
                 self.assertEqual(self.parser.parse(sys_input) == [(sys_input, "string_literal")], exp_output)
 
+    def test_comment(self):
+        testcases = [
+            ("/* do nothing */", "multiline_comment"),
+            ("// do nothing", "inline_comment"),
+            ("// do /* nothing */", "inline_comment"),
+            ("// do /* nothing", "inline_comment"),
+            ("//", "inline_comment"),
+            ("/* do // nothing */", "multiline_comment"),
+        ]
+        for k, (sys_input, exp_output) in enumerate(testcases):
+            with self.subTest(msg='test_%d: %r' % (k, sys_input)):
+                self.assertEqual(self.parser.parse(sys_input), [(sys_input, exp_output)])
+
+    def test_non_comment(self):
+        testcases = [
+            ("a * b"),
+            ("a / b"),
+            ("*/"),
+        ]
+        for k, sys_input in enumerate(testcases):
+            with self.subTest(msg='test_%d: %r' % (k, sys_input)):
+                self.assertFalse(self.parser.parse(sys_input) in [[(sys_input, "multiline_comment")], [(sys_input, "inline_comment")]])
 
 if __name__ == '__main__':
     unittest.main()

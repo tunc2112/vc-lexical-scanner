@@ -38,7 +38,7 @@ class AutomatonData:
             for j, dst_state in enumerate(table[i][1:], 1):
                 input_symbols = column_names[j]
                 if dst_state != AutomatonData.INVALID_STATE:
-                    # print(src_state, input_symbols, dst_state)
+                    # print(src_state, repr(input_symbols), dst_state)
                     state_table[src_state].append((input_symbols, dst_state))
 
         return state_table
@@ -59,9 +59,6 @@ class AutomatonData:
         if current_state not in self.state_table:
             return AutomatonData.INVALID_STATE
 
-        if len(char) != 1:
-            return AutomatonData.INVALID_STATE
-
         for input_symbols, dst_state in self.state_table[current_state]:
             if char == input_symbols:
                 return dst_state
@@ -78,6 +75,12 @@ class AutomatonData:
 
                 continue
 
+            elif input_symbols == "\\n":
+                if char == "\n":
+                    return dst_state
+
+                continue
+
             elif input_symbols.startswith("\\"):
                 if "\\" + char == input_symbols:
                     return dst_state
@@ -90,7 +93,7 @@ class AutomatonData:
                 if re.match(input_symbols, char):
                     return dst_state
 
-            # print(char, input_symbols)
+            # print(repr(char), repr(input_symbols))
 
         return AutomatonData.INVALID_STATE
 
@@ -102,23 +105,28 @@ class Parser:
     def parse(self, str_):
         token_list = []
         parsing_str = ""
-        _str = str_ + " "
+        _str = str_ + "\n"
         for starting_state in self.automaton_data.starting_states:
             current_state = starting_state
             for char in _str:
                 if current_state in self.automaton_data.state_table:
                     next_state = self.automaton_data.get_next_state(current_state, char)
-                    # print(current_state, char, next_state)
+                    # print(current_state, repr(char), next_state)
                     if next_state != AutomatonData.INVALID_STATE:
                         parsing_str += char
                         current_state = next_state
 
+                    print("->", parsing_str, current_state)
                     if next_state == AutomatonData.INVALID_STATE or next_state not in self.automaton_data.state_table:
                         label = self.automaton_data.get_label(current_state, parsing_str)
-                        print("->", parsing_str, current_state, label)
+                        if label.startswith("err"):
+                            raise ValueError("Error in compiling")
+
                         if label != "":
                             print("-->", label)
-                            token_list.append((parsing_str, label))
+                            token = (parsing_str, label)
+                            if token not in token_list:
+                                token_list.append(token)
 
                         parsing_str = ""
                         current_state = starting_state
@@ -129,20 +137,7 @@ class Parser:
 if __name__ == '__main__':
     data = AutomatonData("states.dat")
     p = Parser(data)
-    parsed_data = p.parse("""float exampleFunction(boolean var1, int var2) {
-	if(var1) {
-		return (float)var2;
-	} else {
-		return 94e-1;
-	}
-}
-
-int main() {
-    boolean b = 1 == 1;
-	boolean c = !b;
-	int d = 4420;
-	float r = exampleFunction(c, d);
-	return 0;
-}
-""")
-    print(parsed_data)
+    with open("input.vc") as fi:
+        content = fi.read()
+        parsed_data = p.parse(content)
+        print(*parsed_data, sep='\n')
