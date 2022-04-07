@@ -1,4 +1,3 @@
-
 float exampleFunction(boolean var1, int var2) {
 	if(var1) {
 		return (float)var2;
