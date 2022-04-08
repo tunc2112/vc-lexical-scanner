@@ -46,9 +46,9 @@ Các chú thích không lồng vào nhau.
 
 ## transition table
 
-| state | letter | `\d` | \. | [eE] | [+-] | \*  | /   | =  | `<` | `>` | !  | \⏐ | \& | `\` | [bfnrt'] | `"` | `[{}()\[\];,]` | [^\S\r\n] | \n  |
+| state | letter | `\d` | \. | [eE] | [+-] | \*  | /   | =  | `<` | `>` | !  | \⏐ | \& | `\` | [bfnrt'] | `"` | `[{}()\[\];,]` | [^\S\r\n] | [\r\n] |
 |-------|--------|------|----|------|------|-----|-----|----|-----|-----|----|----|----|-----|----------|-----|----------------|----|-----|
-| 0     | 1      | 2    | 3_ |      | 8    | 8   | 22  | 9  | 10  | 11  | 12 | 13 | 14 | 17  |          | 18  | 21             |    |     |
+| 0     | 1      | 2    | 3_ |      | 8    | 8   | 22  | 9  | 10  | 11  | 12 | 13 | 14 | 17  |          | 18  |                |    |     |
 | 1     | 1      | 1    |    |      |      |     |     |    |     |     |    |    |    |     |          |     |                |    |     |
 | 2     |        | 2    | 3  | 5    |      |     |     |    |     |     |    |    |    |     |          |     |                |    |     |
 | 3     |        | 4    |    | 5    |      |     |     |    |     |     |    |    |    |     |          |     |                |    |     |
@@ -75,26 +75,32 @@ Các chú thích không lồng vào nhau.
 |----------------|
 | 0              |
 
-| ending states | state name |
-|---------------|------------|
-| 1             | `identifier_keyword` |
-| 2             | `int_literal` |
-| 3             | `float_literal` |
-| 4             | `float_literal` |
-| 7             | `float_literal` |
-| 8             | `math_op` |
-| 9             | `assign_op` |
-| 10            | `lt_op` |
-| 11            | `gt_op` |
-| 12            | `not_op` |
-| eq            | `eq_op` |
-| le            | `le_op` |
-| ge            | `ge_op` |
-| ne            | `ne_op` |
-| 15            | `bool_or_op` |
-| 16            | `bool_and_op` |
-| esc           | `escape_sequence` |
-| 20            | `string_literal` |
-| 21            | `separator` |
-| cc            | `multiline_comment` |
-| 24            | `inline_comment` |
+| ending states | state name | is ignored |
+|---------------|------------|------------|
+| 1             | `identifier_keyword` | 0 |
+| 2             | `int_literal` | 0 |
+| 3             | `float_literal` | 0 |
+| 4             | `float_literal` | 0 |
+| 7             | `float_literal` | 0 |
+| 8             | `math_op` | 0 |
+| 9             | `assign_op` | 0 |
+| 10            | `lt_op` | 0 |
+| 11            | `gt_op` | 0 |
+| 12            | `not_op` | 0 |
+| eq            | `eq_op` | 0 |
+| le            | `le_op` | 0 |
+| ge            | `ge_op` | 0 |
+| ne            | `ne_op` | 0 |
+| 15            | `bool_or_op` | 0 |
+| 16            | `bool_and_op` | 0 |
+| esc           | `escape_sequence` | 0 |
+| 20            | `string_literal` | 0 |
+| 21            | `separator` | 1 |
+| cc            | `multiline_comment` | 0 |
+| 24            | `inline_comment` | 0 |
+
+### note
+
+- Transition table chỉ liệt kê những node có cung ra trên đồ thị chuyển.
+- Những trạng thái dẫn đến lỗi sẽ được ghi là `err` trên transition table.
+

@@ -1,3 +1,5 @@
+import os
+import sys
 from collections import defaultdict
 import string
 import re
@@ -26,6 +28,7 @@ class AutomatonData:
                     self.starting_states = [row[0] for row in a_table]
                 elif a_table_name == "ending_state":
                     self.ending_states = {row[0]: row[1] for row in a_table}
+                    self.ignored_states = [row[0] for row in a_table if row[2] != "0"]
                 elif a_table_name == "special_label":
                     self.special_labels = {row[0]: row[1].split("|") for row in a_table}
 
@@ -54,6 +57,8 @@ class AutomatonData:
 
         return result
 
+    def is_state_valid(self, state):
+        return state != AutomatonData.INVALID_STATE and state in self.state_table
 
     def get_next_state(self, current_state, char):
         if current_state not in self.state_table:
@@ -89,7 +94,6 @@ class AutomatonData:
 
             elif input_symbols.startswith("[") and input_symbols.endswith("]"):
                 # TODO: remove importing re
-                # print('inside')
                 if re.match(input_symbols, char):
                     return dst_state
 
@@ -102,42 +106,64 @@ class Parser:
     def __init__(self, automaton_data):
         self.automaton_data = automaton_data
 
-    def parse(self, str_):
+    def parse(self, str_, is_token_unique=True):
         token_list = []
-        parsing_str = ""
         _str = str_ + "\n"
         for starting_state in self.automaton_data.starting_states:
+            parsing_str = ""
             current_state = starting_state
             for char in _str:
                 if current_state in self.automaton_data.state_table:
                     next_state = self.automaton_data.get_next_state(current_state, char)
-                    # print(current_state, repr(char), next_state)
+                    # print(current_state, parsing_str, repr(char), next_state)
                     if next_state != AutomatonData.INVALID_STATE:
                         parsing_str += char
                         current_state = next_state
 
-                    print("->", parsing_str, current_state)
-                    if next_state == AutomatonData.INVALID_STATE or next_state not in self.automaton_data.state_table:
-                        label = self.automaton_data.get_label(current_state, parsing_str)
-                        if label.startswith("err"):
-                            raise ValueError("Error in compiling")
+                    # print("->", parsing_str, current_state)
+                    if not self.automaton_data.is_state_valid(next_state):
+                        parsed_label = self.automaton_data.get_label(current_state, parsing_str)
+                        if parsed_label.startswith("err"):
+                            raise Exception("SyntaxError: Error when compiling:\n" + parsing_str)
 
-                        if label != "":
-                            print("-->", label)
-                            token = (parsing_str, label)
-                            if token not in token_list:
+                        # print("-->", repr(parsing_str), parsed_label)
+                        if current_state not in self.automaton_data.ignored_states and parsed_label != "":
+                            token = (parsing_str, parsed_label)
+                            if not is_token_unique or token not in token_list:
                                 token_list.append(token)
 
                         parsing_str = ""
                         current_state = starting_state
+                        next_state = self.automaton_data.get_next_state(starting_state, char)
+                        # print("new str, state =", repr(char), next_state)
+                        if self.automaton_data.is_state_valid(next_state) and next_state not in self.automaton_data.ignored_states:
+                            parsing_str = char
+                            current_state = next_state
+
+                        # print("-> new str, state =", repr(parsing_str), current_state)
 
         return token_list
 
 
+def write_token_data_to_file(data, filename):
+    with open(filename, "w") as fo:
+        for token_name, token_type in data:
+            print(token_name, sep='\n', file=fo)
+
+
 if __name__ == '__main__':
-    data = AutomatonData("states.dat")
-    p = Parser(data)
-    with open("input.vc") as fi:
+    p = Parser(AutomatonData("states.dat"))
+    vc_filename = "input.vc"
+    if len(sys.argv) > 1:
+        vc_filename = sys.argv[1]
+
+    if not vc_filename.endswith(".vc"):
+        raise ValueError("Not a .vc file")
+
+    if not os.path.exists(vc_filename):
+        raise ValueError("Invalid .vc file directory")
+
+    with open(vc_filename) as fi:
         content = fi.read()
         parsed_data = p.parse(content)
-        print(*parsed_data, sep='\n')
+        write_token_data_to_file(parsed_data, vc_filename + "tok")

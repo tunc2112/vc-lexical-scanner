@@ -1,5 +1,5 @@
-state [a-zA-Z_] \d \. [eE] [+-] \* / = < > ! \| \& \\ [bfnrt'] " [{}()\[\];,] [^\S\r\n] \n
-0 1 2 3_ -1 8 8 22 9 10 11 12 13 14 17 -1 18 21 -1 -1
+state [a-zA-Z_] \d \. [eE] [+-] \* / = < > ! \| \& \\ [bfnrt'] " [{}()\[\];,] [^\S\r\n] [\r\n]
+0 1 2 3_ -1 8 8 22 9 10 11 12 13 14 17 -1 18 -1 -1 -1
 1 1 1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 2 -1 2 3 5 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 3 -1 4 -1 5 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
@@ -25,28 +25,27 @@ state [a-zA-Z_] \d \. [eE] [+-] \* / = < > ! \| \& \\ [bfnrt'] " [{}()\[\];,] [^
 starting_state
 0
 
-ending_state token_name
-1 identifier_or_keyword
-2 int_literal
-3 float_literal
-4 float_literal
-7 float_literal
-8 math_op
-9 assign_op
-10 lt_op
-11 gt_op
-12 not_op
-eq eq_op
-le le_op
-ge ge_op
-ne ne_op
-15 bool_or_op
-16 bool_and_op
-esc escape_sequence
-20 string_literal
-21 separator
-cc multiline_comment
-24 inline_comment
+ending_state token_name is_ignored
+1 identifier_or_keyword 0
+2 int_literal 0
+3 float_literal 0
+4 float_literal 0
+7 float_literal 0
+8 math_op 0
+9 assign_op 0
+10 lt_op 0
+11 gt_op 0
+12 not_op 0
+eq eq_op 0
+le le_op 0
+ge ge_op 0
+ne ne_op 0
+15 bool_or_op 0
+16 bool_and_op 0
+esc escape_sequence 0
+20 string_literal 0
+cc multiline_comment 0
+24 inline_comment 0
 
 special_label token_list
 type_keyword boolean|int|float|void
