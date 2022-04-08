@@ -95,7 +95,6 @@ Các chú thích không lồng vào nhau.
 | 16            | `bool_and_op` | 0 |
 | esc           | `escape_sequence` | 0 |
 | 20            | `string_literal` | 0 |
-| 21            | `separator` | 1 |
 | cc            | `multiline_comment` | 0 |
 | 24            | `inline_comment` | 0 |
 

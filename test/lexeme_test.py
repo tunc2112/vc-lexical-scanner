@@ -5,7 +5,7 @@ from main import AutomatonData, Parser
 
 class LexemeTest(unittest.TestCase):
     def setUp(self):
-        self.parser = Parser(AutomatonData("../states.dat"))
+        self.parser = Parser("../states.dat")
 
     def test_int_literal(self):
         testcases = [
