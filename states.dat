@@ -50,3 +50,4 @@ cc multiline_comment 0
 special_label token_list
 type_keyword boolean|int|float|void
 nontype_keyword if|else|for|while|break|continue|return
+boolean_literal true|false
