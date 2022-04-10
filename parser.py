@@ -28,8 +28,8 @@ class Parser:
                 # print("->", parsing_str, current_state)
                 if not self.automaton_data.is_state_valid(next_state):
                     parsed_label = self.automaton_data.get_label(current_state, parsing_str)
-                    if parsed_label.startswith("err"):
-                        raise Exception("SyntaxError: Error when compiling:\n" + parsing_str)
+                    if parsed_label == "compilation_error":
+                        raise ValueError("SyntaxError: Error when compiling:\n" + parsing_str)
 
                     # print("-->", repr(parsing_str), parsed_label)
                     if current_state not in self.automaton_data.ignored_states and parsed_label != "":

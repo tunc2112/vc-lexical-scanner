@@ -8,7 +8,7 @@ state [a-zA-Z_] \d \. [eE] [+-] \* / = < > ! \| \& \\ [bfnrt'] " [{}()\[\];,] [^
 5 -1 7 -1 -1 6 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 6 -1 7 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 7 -1 7 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
-9 -1 -1 -1 -1 -1 -1 -1 eq -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+9 -1 -1 -1 -1 -1 -1 -1 eq err err err err err -1 -1 -1 -1 -1 -1
 10 -1 -1 -1 -1 -1 -1 -1 le -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 11 -1 -1 -1 -1 -1 -1 -1 ge -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 12 -1 -1 -1 -1 -1 -1 -1 ne -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
@@ -46,6 +46,7 @@ esc escape_sequence 0
 20 string_literal 0
 cc multiline_comment 0
 24 inline_comment 0
+err compilation_error 0
 
 special_label token_list
 type_keyword boolean|int|float|void

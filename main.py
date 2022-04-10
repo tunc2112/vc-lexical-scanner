@@ -13,8 +13,14 @@ def write_token_data_to_file(data, filename):
 def build_output_file(filename):
     with open(filename) as fi:
         content = fi.read()
-        parsed_data = p.parse(content)
+        try:
+            parsed_data = p.parse(content)
+        except ValueError as e:
+            print(e)
+            return False
+
         write_token_data_to_file(parsed_data, filename + "tok")
+        return True
 
 
 if __name__ == '__main__':
